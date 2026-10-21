@@ -1,0 +1,74 @@
+# === Python ===
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# === Тесты и линтеры ===
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+coverage.xml
+
+# === Виртуальное окружение / пакетный менеджер ===
+.venv/
+venv/
+env/
+.uv/
+# uv.lock — коммитим (воспроизводимость приложения)
+
+# === Секреты (ключи API и т.п.) ===
+.env
+.env.*
+!.env.example
+
+# === Рантайм-данные (SQLite и чекпоинты) ===
+data/
+db/
+*.db
+*.sqlite
+*.sqlite3
+*.db-wal
+*.db-shm
+*.sqlite-wal
+*.sqlite-shm
+
+# === Модели эмбеддингов (большие, скачиваются локально) ===
+models/
+*.gguf
+*.onnx
+*.safetensors
+.cache/
+
+# === Генерация отчётов (выходные артефакты) ===
+reports/
+output/
+
+# === IDE / редакторы ===
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# === ОС ===
+.DS_Store
+Thumbs.db

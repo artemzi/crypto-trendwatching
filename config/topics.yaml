@@ -1,0 +1,138 @@
+# config/topics.yaml
+# Зоны наблюдения крипторынка.
+# Добавление/изменение зоны = правка этого файла, без правки кода.
+# seed_keywords — только стартовые затравки для поиска;
+# фактический отбор идёт по смысловой близости (эмбеддинги bge-m3).
+
+version: 1
+
+zones:
+  - id: infrastructure
+    name: "Инфраструктура: L1/L2, мосты, интероперабельность"
+    enabled: true
+    seed_keywords:
+      - "L1 L2 rollup upgrade"
+      - "bridge interop cross-chain"
+      - "account abstraction"
+      - "апгрейд сети хардфорк"
+      - "модульный блокчейн"
+    onchain_indicators:
+      - "TVL сети/моста"
+      - "активные адреса"
+      - "комиссии сети"
+      - "объём мостов"
+
+  - id: defi
+    name: "DeFi: лендинг, DEX, деривативы, рестейкинг"
+    enabled: true
+    seed_keywords:
+      - "DeFi lending DEX derivatives"
+      - "liquid staking restaking"
+      - "yield protocol"
+      - "лендинг деривативы рестейкинг"
+    onchain_indicators:
+      - "TVL протокола"
+      - "объём DEX"
+      - "заблокированная стоимость LST/LRT"
+
+  - id: stablecoins_rwa
+    name: "Стейблкоины и токенизация (RWA)"
+    enabled: true
+    seed_keywords:
+      - "stablecoin supply regulation"
+      - "tokenized RWA treasury"
+      - "yield stablecoin"
+      - "стейблкоин эмиссия токенизация активов"
+    onchain_indicators:
+      - "эмиссия стейблкоинов"
+      - "объём переводов стейблкоинов"
+      - "TVL RWA-протоколов"
+
+  - id: regulation_institutional
+    name: "Регулирование и институциональное принятие (ETF, MiCA, банки)"
+    enabled: true
+    seed_keywords:
+      - "ETF approval SEC CFTC"
+      - "MiCA crypto regulation"
+      - "bank custody treasury bitcoin"
+      - "регулирование криптовалют ЦБ РФ"
+      - "институциональные инвесторы ETF"
+    onchain_indicators:
+      - "потоки в ETF (CoinShares)"
+      - "корпоративные казначейства"
+      - "объёмы OTC"
+
+  - id: ai_crypto
+    name: "AI × crypto (агенты, AI-токены)"
+    enabled: true
+    seed_keywords:
+      - "AI agent crypto trading"
+      - "AI token decentralized inference"
+      - "autonomous agent payments"
+      - "ИИ-агенты криптовалюта"
+      - "AI-токены"
+    onchain_indicators:
+      - "объём AI-токенов"
+      - "активность агентских кошельков"
+      - "TVL AI-протоколов"
+
+  - id: security_exploits
+    name: "Безопасность и эксплойты"
+    enabled: true
+    seed_keywords:
+      - "exploit hack bridge vulnerability"
+      - "smart contract audit"
+      - "DeFi attack loss"
+      - "эксплойт уязвимость взлом мост"
+    onchain_indicators:
+      - "объём потерянных средств"
+      - "число атак"
+      - "страховые покрытия (TVL страховых пулов)"
+
+  - id: whale_smartmoney
+    name: "Whale & smart money"
+    enabled: true
+    seed_keywords:
+      - "whale transfer accumulation"
+      - "exchange inflow outflow"
+      - "smart money wallet"
+      - "киты накопление биржевые потоки"
+    onchain_indicators:
+      - "крупные трансферы (Whale Alert)"
+      - "биржевые притоки/оттоки"
+      - "резервы бирж"
+      - "активность smart-money кошельков"
+
+  - id: funding_vc
+    name: "Фондирование и VC-потоки"
+    enabled: true
+    seed_keywords:
+      - "crypto funding round VC raise"
+      - "a16z crypto investment"
+      - "инвестиции в криптостартапы раунд"
+    onchain_indicators:
+      - "объём привлечённых средств"
+      - "число раундов по секторам"
+
+  - id: derivatives_positioning
+    name: "Деривативы и позиционирование"
+    enabled: true
+    seed_keywords:
+      - "funding rate open interest"
+      - "liquidation cascade"
+      - "фандинг открытый интерес ликвидации"
+    onchain_indicators:
+      - "funding rate"
+      - "open interest"
+      - "объём ликвидаций"
+
+  - id: macro_crypto
+    name: "Макро для крипты"
+    enabled: true
+    seed_keywords:
+      - "Fed rate liquidity DXY"
+      - "risk assets correlation bitcoin macro"
+      - "ставка ФРС ликвидность корреляция"
+    onchain_indicators:
+      - "корреляция BTC/S&P"
+      - "глобальная ликвидность (индикаторы)"

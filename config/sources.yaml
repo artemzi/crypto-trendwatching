@@ -1,0 +1,72 @@
+# config/sources.yaml
+# Seed-каталог источников. Метод сбора:
+#   rss         — feedparser напрямую (обязателен feed_url)
+#   fetch_url   — LLM читает страницу
+#   search      — поисковый веер (см. search_providers)
+#   onchain_api — объективные on-chain/рыночные данные
+#   whale_api   — фиды крупных трансферов / smart money
+# availability_from_rf — "да" / "частично" / "нет" / "проверить"
+# url — каноническая ссылка для цитирования; feed_url — адрес RSS-фида (только для rss).
+
+version: 1
+
+media_en:
+  - { id: theblock,     name: "The Block",          url: "https://www.theblock.co/", feed_url: "https://www.theblock.co/rss.xml", region: EN, method: rss, availability_from_rf: "да" }
+  - { id: coindesk,     name: "CoinDesk",           url: "https://www.coindesk.com/", feed_url: "https://www.coindesk.com/arc/outboundfeeds/rss/", region: EN, method: rss, availability_from_rf: "да" }
+  - { id: decrypt,      name: "Decrypt",            url: "https://decrypt.co/", feed_url: "https://decrypt.co/feed", region: EN, method: rss, availability_from_rf: "да" }
+  - { id: dlnews,       name: "DL News",            url: "https://www.dlnews.com/", region: EN, method: fetch_url, availability_from_rf: "да", notes: "RSS-фид нестабильно доступен (bot-protection); собрать через fetch_url" }
+  - { id: blockworks,   name: "Blockworks",         url: "https://blockworks.co/", feed_url: "https://blockworks.co/feed", region: EN, method: rss, availability_from_rf: "да" }
+  - { id: bankless,     name: "Bankless",           url: "https://www.bankless.com/", region: EN, method: fetch_url, availability_from_rf: "да", notes: "RSS недоступен (Cloudflare 403); собрать через fetch_url" }
+  - { id: cointelegraph, name: "Cointelegraph",     url: "https://cointelegraph.com/", feed_url: "https://cointelegraph.com/rss", region: EN, method: rss, availability_from_rf: "частично", notes: "ниже по качеству — использовать с осторожностью" }
+
+media_ru:
+  - { id: forkklog,     name: "ForkLog",            url: "https://forklog.com/", feed_url: "https://forklog.com/feed", region: RU, method: rss, availability_from_rf: "да" }
+  - { id: rbc_crypto,   name: "RBC Crypto",         url: "https://www.rbc.ru/crypto/", region: RU, method: fetch_url, availability_from_rf: "да" }
+  - { id: bitsmedia,    name: "bits.media",         url: "https://bits.media/", feed_url: "https://bits.media/rss.php", region: RU, method: rss, availability_from_rf: "да" }
+  - { id: incrypted,    name: "Incrypted",          url: "https://incrypted.net/", region: RU, method: fetch_url, availability_from_rf: "частично", notes: "RSS-фид нестабильно доступен (redirect на incrypted.com); собрать через fetch_url" }
+  - { id: habr_crypto,  name: "Habr (crypto)",      url: "https://habr.com/ru/hubs/cryptocurrencies/articles/", region: RU, method: fetch_url, availability_from_rf: "да" }
+
+research:
+  - { id: messari,      name: "Messari",            url: "https://messari.io/", region: EN, method: fetch_url, availability_from_rf: "частично" }
+  - { id: galaxy,       name: "Galaxy Research",    url: "https://www.galaxy.com/insights/research/", region: EN, method: fetch_url, availability_from_rf: "да" }
+  - { id: delphi,       name: "Delphi Digital",     url: "https://members.delphidigital.io/", region: EN, method: fetch_url, availability_from_rf: "частично" }
+  - { id: electric_capital, name: "Electric Capital (dev report)", url: "https://www.developerreport.com/", region: EN, method: fetch_url, availability_from_rf: "да" }
+  - { id: a16z_crypto,  name: "a16z crypto",        url: "https://a16zcrypto.com/", region: EN, method: fetch_url, availability_from_rf: "да" }
+  - { id: coinshares,   name: "CoinShares (flows)", url: "https://coinshares.com/research", region: EN, method: fetch_url, availability_from_rf: "да" }
+
+onchain:
+  - { id: defillama,    name: "DefiLlama",          url: "https://defillama.com/", region: Global, method: onchain_api, availability_from_rf: "да", notes: "TVL/объёмы/стабильные монеты — бесплатный API" }
+  - { id: coingecko,    name: "CoinGecko",          url: "https://www.coingecko.com/", region: Global, method: onchain_api, availability_from_rf: "да", notes: "цены/эмиссия — бесплатный tier" }
+  - { id: dune,         name: "Dune Analytics",     url: "https://dune.com/", region: Global, method: onchain_api, availability_from_rf: "частично", notes: "кастомные SQL-запросы" }
+  - { id: token_terminal, name: "Token Terminal",   url: "https://tokenterminal.com/", region: Global, method: onchain_api, availability_from_rf: "да" }
+  - { id: artemis,      name: "Artemis",            url: "https://www.artemis.xyz/", region: Global, method: onchain_api, availability_from_rf: "частично" }
+  - { id: glassnode,    name: "Glassnode",          url: "https://glassnode.com/", region: Global, method: onchain_api, availability_from_rf: "частично", notes: "платно, опционально" }
+  - { id: santiment,    name: "Santiment",          url: "https://santiment.net/", region: Global, method: onchain_api, availability_from_rf: "частично", notes: "платно, опционально" }
+
+whale:
+  - { id: whale_alert,  name: "Whale Alert",        url: "https://whale-alert.io/", region: Global, method: whale_api, availability_from_rf: "да" }
+  - { id: arkham,       name: "Arkham",             url: "https://platform.arkhamintelligence.com/", region: Global, method: whale_api, availability_from_rf: "частично" }
+  - { id: nansen,       name: "Nansen",             url: "https://www.nansen.ai/", region: Global, method: whale_api, availability_from_rf: "частично", notes: "платно" }
+  - { id: lookonchain,  name: "Lookonchain",        url: "https://lookonchain.com/", region: EN, method: whale_api, availability_from_rf: "частично", notes: "источник на X + сайт" }
+  - { id: cryptoqunt,   name: "CryptoQuant",        url: "https://cryptoquant.com/", region: Global, method: whale_api, availability_from_rf: "частично", notes: "биржевые резервы" }
+
+regulators:
+  - { id: sec,         name: "SEC",                 url: "https://www.sec.gov/", region: EN, method: fetch_url, availability_from_rf: "да" }
+  - { id: cftc,        name: "CFTC",                url: "https://www.cftc.gov/", region: EN, method: fetch_url, availability_from_rf: "да" }
+  - { id: esma,        name: "ESMA / MiCA",         url: "https://www.esma.europa.eu/", region: EN, method: fetch_url, availability_from_rf: "да" }
+  - { id: bis,         name: "BIS",                 url: "https://www.bis.org/", region: EN, method: fetch_url, availability_from_rf: "да" }
+  - { id: cbr,         name: "ЦБ РФ",               url: "https://cbr.ru/", feed_url: "https://www.cbr.ru/rss/RssNews", region: RU, method: rss, availability_from_rf: "да" }
+  - { id: duma,        name: "Госдума",             url: "http://duma.gov.ru/", region: RU, method: fetch_url, availability_from_rf: "да" }
+  - { id: minfin,      name: "Минфин РФ",           url: "https://minfin.gov.ru/", region: RU, method: fetch_url, availability_from_rf: "да" }
+
+governance_social:
+  - { id: snapshot,    name: "Snapshot",            url: "https://snapshot.org/", region: Global, method: fetch_url, availability_from_rf: "да", notes: "голосования DAO" }
+  - { id: tally,       name: "Tally",               url: "https://www.tally.xyz/", region: Global, method: fetch_url, availability_from_rf: "да" }
+  - { id: github,      name: "GitHub (протоколы)",  url: "https://github.com/", region: Global, method: fetch_url, availability_from_rf: "да", notes: "dev-активность протоколов" }
+  - { id: x_curated,   name: "X (курируемые списки)", url: "https://x.com/", region: Global, method: fetch_url, availability_from_rf: "проверить", notes: "только курируемые списки, без скрейпинга" }
+
+search_providers:
+  - { id: yandex,      name: "Яндекс Search API v2", url: "https://yandex.cloud/ru/services/search-api", region: RU, method: search, availability_from_rf: "да", notes: "основной RU-поиск, рублёвая карта, тест ~10K/мес" }
+  - { id: tavily,      name: "Tavily",              url: "https://tavily.com/", region: EN, method: search, availability_from_rf: "да", notes: "опционально, free tier" }
+  - { id: serper,      name: "Serper",              url: "https://serper.dev/", region: EN, method: search, availability_from_rf: "да", enabled: false, notes: "исключён — зарубежная карта" }
+  - { id: perplexity,  name: "Perplexity Sonar",    url: "https://www.perplexity.ai/", region: EN, method: search, availability_from_rf: "частично", enabled: false, notes: "исключён — зарубежная карта" }

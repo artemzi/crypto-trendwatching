@@ -1,0 +1,48 @@
+# config/onchain.yaml
+# Маппинг «зона → монеты/протоколы» для on-chain-подтверждения (DefiLlama/CoinGecko).
+# coin     — id CoinGecko (для цены и change price).
+# protocol — slug DefiLlama (для TVL/объёмов и change tvl/volume).
+# Правка этого файла не требует изменения кода (NFR-6).
+
+version: 1
+
+zones:
+  - id: infrastructure
+    coins: [ethereum, optimism, arbitrum, solana, base]
+    protocols: [ethereum, arbitrum, optimism, solana, base]
+
+  - id: defi
+    coins: [aave, uniswap, lido-dao, maker]
+    protocols: [aave, uniswap, lido, maker]
+
+  - id: stablecoins_rwa
+    coins: [tether, usd-coin, dai]
+    protocols: []
+
+  - id: regulation_institutional
+    coins: [bitcoin, ethereum]
+    protocols: []
+
+  - id: ai_crypto
+    coins: [fetch-ai, bittensor, render-token]
+    protocols: []
+
+  - id: security_exploits
+    coins: [ethereum]
+    protocols: []
+
+  - id: whale_smartmoney
+    coins: [bitcoin, ethereum]
+    protocols: []
+
+  - id: funding_vc
+    coins: []
+    protocols: []
+
+  - id: derivatives_positioning
+    coins: [bitcoin, ethereum]
+    protocols: []
+
+  - id: macro_crypto
+    coins: [bitcoin, ethereum]
+    protocols: []

@@ -1,0 +1,101 @@
+[project]
+name = "crypto-trendwatching"
+version = "0.1.0"
+description = "Персональный исследовательский дайджест по крипторынку"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "fastapi>=0.135.1",
+    "feedparser>=6.0.11",
+    "httpx>=0.28.1",
+    "numpy>=2.1.0",
+    "openai>=1.60.0",
+    "plotly>=5.24.0",
+    "pydantic>=2.10.0",
+    "pydantic-settings>=2.14.1",
+    "python-docx>=1.1.0",
+    "pyyaml>=6.0.2",
+    "sentence-transformers>=3.0.0",
+    "uvicorn[standard]>=0.41.0",
+]
+
+[project.scripts]
+crypto-trendwatching = "crypto_trendwatching.cli:main"
+
+[build-system]
+requires = ["uv_build>=0.10.9,<0.11.0"]
+build-backend = "uv_build"
+
+[dependency-groups]
+dev = [
+    "bandit>=1.9.4",
+    "mypy>=1.19.1",
+    "pip-audit>=2.10.0",
+    "pre-commit>=4.5.1",
+    "pytest>=9.0.2",
+    "pytest-cov>=7.0.0",
+    "ruff>=0.15.5",
+    "types-pyyaml>=6.0.12.20260518",
+]
+
+[tool.ruff]
+line-length = 88
+target-version = "py311"
+
+[tool.ruff.lint]
+select = [
+    "E",     # pycodestyle errors
+    "F",     # pyflakes
+    "I",     # isort
+    "B",     # flake8-bugbear
+    "Q",     # flake8-quotes
+    "UP",    # pyupgrade
+    "SIM",   # flake8-simplify
+    "PTH",   # flake8-use-pathlib
+    "RUF",   # ruff-specific rules
+    "S",     # flake8-bandit — безопасность
+    "N",     # pep8-naming
+    "W",     # pycodestyle warnings
+    "C4",    # flake8-comprehensions
+    "TID",   # flake8-tidy-imports
+    "RSE",   # flake8-raise
+    "RET",   # flake8-return
+    "ARG",   # flake8-unused-arguments
+    "PL",    # Pylint
+]
+ignore = ["E501", "RUF001", "RUF002"]  # длина строк и кириллица в строках — не ошибка
+fixable = ["ALL"]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/**/*.py" = ["S101", "PLR2004"]
+
+[tool.ruff.format]
+quote-style = "double"
+docstring-code-format = true
+
+[tool.mypy]
+python_version = "3.11"
+strict = true
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = true
+
+[[tool.mypy.overrides]]
+module = [
+    "feedparser",
+    "sentence_transformers",
+    "docx",
+    "plotly",
+    "plotly.graph_objects",
+    "plotly.offline",
+]
+ignore_missing_imports = true
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]
+addopts = ["--cov=src", "--cov-report=term-missing", "--cov-fail-under=70"]
+
+[tool.bandit]
+exclude_dirs = ["tests", ".venv"]
+skips = ["B101", "B104"]
