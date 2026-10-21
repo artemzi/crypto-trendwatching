@@ -66,6 +66,7 @@ def build_pipeline(repository: TrendRepository) -> Pipeline:
             pump_price_change_7d=settings.pump_price_change_7d,
             confirmation_change=settings.confirmation_change,
         ),
+        research_budget_seconds=settings.research_budget_seconds,
     )
 
 

@@ -9,7 +9,7 @@ import pytest
 from fastapi.testclient import TestClient
 
 from crypto_trendwatching.api.app import (
-    _estimated_finish,
+    _eta_display,
     _median_duration_seconds,
     create_app,
 )
@@ -137,13 +137,17 @@ def test_median_duration_seconds() -> None:
     assert _median_duration_seconds(runs) == 20.0
 
 
-def test_estimated_finish() -> None:
+def test_eta_display() -> None:
     run = ReportRun(status="running", started_at="2026-10-21T00:00:00+00:00")
-    assert _estimated_finish(run, None) == ""
-    estimated = _estimated_finish(run, 60.0)
-    assert "/" in estimated  # формат D/M/Y H:M:S
+    assert _eta_display(run, None) == ""
+    # прошедший момент → «задерживается»
+    past = ReportRun(status="running", started_at="2000-01-01T00:00:00+00:00")
+    assert "задерживается" in _eta_display(past, 60.0)
+    # будущее → «≈ D/M/Y H:M:S»
+    future = ReportRun(status="running", started_at="2099-01-01T00:00:00+00:00")
+    assert _eta_display(future, 60.0).startswith("≈ ")
     completed = ReportRun(status="completed", started_at="2026-10-21T00:00:00+00:00")
-    assert _estimated_finish(completed, 60.0) == ""
+    assert _eta_display(completed, 60.0) == ""
 
 
 def test_start_run_background_completes(

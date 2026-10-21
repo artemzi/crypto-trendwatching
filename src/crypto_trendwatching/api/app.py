@@ -483,17 +483,21 @@ def _median_duration_seconds(runs: list[ReportRun]) -> float | None:
     return statistics.median(durations) if durations else None
 
 
-def _estimated_finish(run: ReportRun, median_seconds: float | None) -> str:
-    """Оценка времени завершения бегущего прогона по медианной длительности."""
+def _eta_display(run: ReportRun, median_seconds: float | None) -> str:
+    """Оценка завершения для UI: «≈ дата» в будущем, иначе «задерживается (+N мин)»."""
     if run.status != "running" or median_seconds is None:
         return ""
     started = _parse_iso(run.started_at)
     if started is None:
         return ""
+    if started.tzinfo is None:
+        started = started.replace(tzinfo=UTC)
     estimated = started + timedelta(seconds=median_seconds)
-    if estimated.tzinfo is not None:
-        estimated = estimated.astimezone()
-    return estimated.strftime("%d/%m/%Y %H:%M:%S")
+    now = datetime.now(UTC)
+    if estimated <= now:
+        minutes = int((now - estimated).total_seconds() // 60)
+        return f"задерживается (+{minutes} мин)"
+    return "≈ " + estimated.astimezone().strftime("%d/%m/%Y %H:%M:%S")
 
 
 def _run_row(
@@ -518,9 +522,9 @@ def _run_row(
     )
     end_cell = _format_datetime(run.finished_at)
     if run.status == "running":
-        eta = _estimated_finish(run, median_duration_seconds)
+        eta = _eta_display(run, median_duration_seconds)
         if eta:
-            end_cell = f'<span class="muted">≈ {eta}</span>'
+            end_cell = f'<span class="muted">{html_lib.escape(eta)}</span>'
     title = zone_names.get(_run_zone_id(run) or "", f"Прогон {run.id}")
     description = _run_description(run)
     title_cell = f"<td><strong>{html_lib.escape(title)}</strong>"

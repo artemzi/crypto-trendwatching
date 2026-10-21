@@ -35,6 +35,7 @@ class Settings(BaseSettings):
     anti_repeat_threshold: float = 0.85
     pump_price_change_7d: float = 30.0
     confirmation_change: float = 10.0
+    research_budget_seconds: float = 600.0
 
 
 settings = Settings()

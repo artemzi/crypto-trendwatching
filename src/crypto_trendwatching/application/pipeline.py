@@ -112,6 +112,7 @@ class Pipeline:
         liveness: Callable[[str], bool] | None = None,
         unlock_fetcher: Callable[[int], list[Catalyst]] | None = None,
         verify_thresholds: VerifyThresholds | None = None,
+        research_budget_seconds: float | None = None,
     ) -> None:
         self._collector = collector
         self._repository = repository
@@ -123,6 +124,7 @@ class Pipeline:
         self._catalog = catalog or {}
         self._onchain_mapping = onchain_mapping or {}
         self._unlock_fetcher = unlock_fetcher or fetch_unlock_catalysts
+        self._research_budget_seconds = research_budget_seconds
         self._whale_breaker = CircuitBreaker(failure_threshold=3, cooldown_seconds=60.0)
         self._agent = AgentLoop(llm, AgentTools(search, onchain))
         self._verifier = Verifier(
@@ -381,8 +383,17 @@ class Pipeline:
     ) -> dict[int, ResearchResult]:
         hint = self._onchain_hint(zone)
         research: dict[int, ResearchResult] = {}
+        budget = self._research_budget_seconds
+        started = perf_counter()
+        budget_hit = False
         for candidate in candidates:
             if candidate.id is None:
+                continue
+            if budget is not None and perf_counter() - started > budget:
+                if not budget_hit:
+                    logger.warning("бюджет research исчерпан (%.0fс)", budget)
+                    budget_hit = True
+                research[candidate.id] = ResearchResult(notes="")
                 continue
             signals = candidate_signals.get(candidate.id, [])
             result = self._agent.research(candidate, signals, run_id, onchain_hint=hint)
