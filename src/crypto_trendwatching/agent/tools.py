@@ -3,8 +3,10 @@
 from __future__ import annotations
 
 import logging
+import re
 from dataclasses import dataclass, field
 from datetime import UTC, datetime
+from html import unescape
 from typing import Any
 
 import httpx
@@ -19,6 +21,14 @@ from crypto_trendwatching.domain.ports import OnChainClient, SearchProvider
 logger = logging.getLogger(__name__)
 
 _MAX_FETCH_CHARS = 20_000
+
+
+def _html_to_text(raw: str) -> str:
+    """Убрать HTML-разметку из сырого текста страницы (скрипты/стили/теги → пробелы)."""
+    text = re.sub(r"(?is)<(script|style|noscript).*?</\1>", " ", raw)
+    text = re.sub(r"(?s)<[^>]+>", " ", text)
+    text = unescape(text)
+    return re.sub(r"\s+", " ", text).strip()
 
 
 @dataclass(frozen=True)
@@ -105,7 +115,7 @@ class AgentTools:
             with httpx.Client(timeout=self._timeout, follow_redirects=True) as client:
                 response = client.get(url)
                 response.raise_for_status()
-                text = response.text[:_MAX_FETCH_CHARS]
+                text = _html_to_text(response.text)[:_MAX_FETCH_CHARS]
         except Exception:
             logger.exception("fetch_url не удался: %s", url)
             return ToolResult(text=f"не удалось загрузить {url}")
@@ -124,10 +134,11 @@ class AgentTools:
         evidence: list[EvidenceBinding] = []
         for result in results:
             lines.append(f"- {result.title or ''}: {result.url}")
-            if result.snippet:
-                lines.append(f"  {result.snippet}")
+            snippet = _html_to_text(result.snippet or "")
+            if snippet:
+                lines.append(f"  {snippet}")
             evidence.append(
-                EvidenceBinding(source_url=result.url, quote=result.snippet)
+                EvidenceBinding(source_url=result.url, quote=snippet[:500] or None)
             )
         return ToolResult(text="\n".join(lines), evidence=evidence)
 

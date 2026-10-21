@@ -5,7 +5,7 @@ from __future__ import annotations
 from typing import Any
 
 from crypto_trendwatching.agent.loop import AgentLoop
-from crypto_trendwatching.agent.tools import AgentTools
+from crypto_trendwatching.agent.tools import AgentTools, _html_to_text
 from crypto_trendwatching.domain.models import (
     AgentTurn,
     SearchResult,
@@ -13,6 +13,18 @@ from crypto_trendwatching.domain.models import (
     ToolCall,
     TrendCandidate,
 )
+
+
+def test_html_to_text_strips_markup() -> None:
+    raw = (
+        "<html><head><style>body{color:red}</style></head><body>"
+        "<p>Hello <b>World</b> &amp; crypto</p>"
+        "<script>var x = 1;</script></body></html>"
+    )
+    text = _html_to_text(raw)
+    assert "Hello World & crypto" in text
+    assert "<" not in text
+    assert "body{color:red}" not in text
 
 
 class FakeSearch:
