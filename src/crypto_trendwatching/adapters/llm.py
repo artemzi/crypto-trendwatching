@@ -10,6 +10,7 @@ import httpx
 from openai import OpenAI
 
 from crypto_trendwatching.domain.models import AgentTurn, Tool, ToolCall
+from crypto_trendwatching.usage import TokenUsageTracker
 
 logger = logging.getLogger(__name__)
 
@@ -51,9 +52,16 @@ def _loads_or_default(raw: str | None) -> dict[str, Any]:
 class OpenAILlmClient:
     """Тонкий клиент поверх OpenAI-совместимого API (DeepSeek и др.)."""
 
-    def __init__(self, base_url: str, model: str, api_key: str | None = None) -> None:
+    def __init__(
+        self,
+        base_url: str,
+        model: str,
+        api_key: str | None = None,
+        usage: TokenUsageTracker | None = None,
+    ) -> None:
         self._client = OpenAI(base_url=base_url, api_key=api_key or "not-needed")
         self._model = model
+        self._usage = usage
 
     def complete(
         self,
@@ -76,6 +84,7 @@ class OpenAILlmClient:
         if tools is not None:
             kwargs["tools"] = tools
         response = self._client.chat.completions.create(**kwargs)
+        self._record_usage(getattr(response, "usage", None))
         return response.choices[0].message.content or ""
 
     def complete_with_tools(
@@ -86,11 +95,19 @@ class OpenAILlmClient:
             messages=cast(Any, messages),
             tools=cast(Any, _tools_to_openai(tools)),
         )
+        self._record_usage(getattr(response, "usage", None))
         message = response.choices[0].message
         return AgentTurn(
             content=message.content or "",
             tool_calls=_tool_calls_from_openai(message),
         )
+
+    def _record_usage(self, usage: Any) -> None:
+        if self._usage is not None and usage is not None:
+            self._usage.add(
+                getattr(usage, "prompt_tokens", 0) or 0,
+                getattr(usage, "completion_tokens", 0) or 0,
+            )
 
 
 class OllamaLlmClient:
@@ -103,6 +120,7 @@ class OllamaLlmClient:
         *,
         think: bool = False,
         timeout: float = 600.0,
+        usage: TokenUsageTracker | None = None,
     ) -> None:
         root = base_url.rstrip("/")
         if root.endswith("/v1"):
@@ -111,6 +129,7 @@ class OllamaLlmClient:
         self._model = model
         self._think = think
         self._timeout = timeout
+        self._usage = usage
 
     def complete(
         self,
@@ -138,6 +157,7 @@ class OllamaLlmClient:
             response = client.post(f"{self._base_url}/api/chat", json=payload)
             response.raise_for_status()
             data = response.json()
+        self._record_usage(data)
         return _extract_content(data)
 
     def complete_with_tools(
@@ -156,7 +176,17 @@ class OllamaLlmClient:
             )
             response.raise_for_status()
             data = response.json()
+        self._record_usage(data)
         return _parse_react(_extract_content(data))
+
+    def _record_usage(self, data: Any) -> None:
+        if self._usage is not None and isinstance(data, dict):
+            prompt = data.get("prompt_eval_count")
+            completion = data.get("eval_count")
+            self._usage.add(
+                prompt if isinstance(prompt, int) else 0,
+                completion if isinstance(completion, int) else 0,
+            )
 
 
 def _extract_content(data: Any) -> str:

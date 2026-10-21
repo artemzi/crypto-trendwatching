@@ -56,6 +56,7 @@ from crypto_trendwatching.domain.ports import (
     TrendRepository,
     WhaleClient,
 )
+from crypto_trendwatching.usage import TokenUsageTracker
 
 logger = logging.getLogger(__name__)
 
@@ -113,6 +114,7 @@ class Pipeline:
         unlock_fetcher: Callable[[int], list[Catalyst]] | None = None,
         verify_thresholds: VerifyThresholds | None = None,
         research_budget_seconds: float | None = None,
+        usage: TokenUsageTracker | None = None,
     ) -> None:
         self._collector = collector
         self._repository = repository
@@ -125,6 +127,7 @@ class Pipeline:
         self._onchain_mapping = onchain_mapping or {}
         self._unlock_fetcher = unlock_fetcher or fetch_unlock_catalysts
         self._research_budget_seconds = research_budget_seconds
+        self._usage = usage
         self._whale_breaker = CircuitBreaker(failure_threshold=3, cooldown_seconds=60.0)
         self._agent = AgentLoop(llm, AgentTools(search, onchain))
         self._verifier = Verifier(
@@ -241,6 +244,8 @@ class Pipeline:
 
             weak_signals = self._weak_signals(kept_signals, candidate_signals)
             funnel["phases"]["weak_signals"] = {"count": len(weak_signals)}
+            if self._usage is not None:
+                funnel["tokens"] = self._usage.snapshot()
 
             with _timing(funnel["timings"], "report"):
                 report_md = render_report(

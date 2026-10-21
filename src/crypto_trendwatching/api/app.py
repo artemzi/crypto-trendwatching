@@ -582,6 +582,9 @@ def _run_description(run: ReportRun) -> str:
         parts.append(f"{passed} трендов")
     if isinstance(repeats, int) and repeats:
         parts.append(f"{repeats} повторов")
+    tokens = data.get("tokens") if isinstance(data, dict) else None
+    if isinstance(tokens, dict) and isinstance(tokens.get("total_tokens"), int):
+        parts.append(f"{tokens['total_tokens']} токенов")
     return " · ".join(parts)
 
 

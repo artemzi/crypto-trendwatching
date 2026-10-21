@@ -31,6 +31,7 @@ from crypto_trendwatching.domain.ports import (
     TrendRepository,
     WhaleClient,
 )
+from crypto_trendwatching.usage import TokenUsageTracker
 
 
 def build_pipeline(repository: TrendRepository) -> Pipeline:
@@ -40,7 +41,8 @@ def build_pipeline(repository: TrendRepository) -> Pipeline:
     mapping: dict[str, OnChainMapping] = load_onchain_mapping(
         settings.config_dir / "onchain.yaml"
     )
-    llm = build_llm()
+    usage = TokenUsageTracker()
+    llm = build_llm(usage)
     search = build_search_provider()
     onchain = build_onchain()
     whale = build_whale()
@@ -67,15 +69,16 @@ def build_pipeline(repository: TrendRepository) -> Pipeline:
             confirmation_change=settings.confirmation_change,
         ),
         research_budget_seconds=settings.research_budget_seconds,
+        usage=usage,
     )
 
 
-def build_llm() -> LLMClient:
+def build_llm(usage: TokenUsageTracker | None = None) -> LLMClient:
     """Ollama — нативный клиент с think=false; иначе OpenAI-совместимый."""
     if _looks_like_ollama(settings.llm_base_url):
-        return OllamaLlmClient(settings.llm_base_url, settings.llm_model)
+        return OllamaLlmClient(settings.llm_base_url, settings.llm_model, usage=usage)
     return OpenAILlmClient(
-        settings.llm_base_url, settings.llm_model, settings.llm_api_key
+        settings.llm_base_url, settings.llm_model, settings.llm_api_key, usage=usage
     )
 
 
